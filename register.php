@@ -62,7 +62,7 @@
     //require_once('get_host_info.inc');
     //require_once('rabbitMQLib.inc');
     include(__DIR__ . "/vendor/autoload.php");
-    include(__DIR__ . "/config_rmq.php");
+    require('config_rmq.ini');
     use PhpAmqpLib\Connection\AMQPStreamConnection;
     use PhpAmqpLib\Exchange\AMQPExchangeType;
     use Php\Message\AMQPMessage;
@@ -139,15 +139,15 @@
                 ":pass" => $pass_hash,
             );
 
-            $connection = new AMQPStreamConnection($BROKER_HOST, $BROKER_PORT, $USER, $PASSWORD, $VHOST);
+            $connection = new AMQPStreamConnection('192.168.1.105', 5672, 'smit', 'P@78word', '/');
             $channel = $connection->channel();
-            $channel->queue_declare($QUEUE, false, true, false, false);
-            $channel->exchange_declare($EXCHANGE, AMQPExchangeType::DIRECT, false, true, false);
-            $channel->queue_bind($QUEUE, $EXCHANGE);
+            $channel->queue_declare('regdata', false, true, false, false);
+            $channel->exchange_declare('regexch', AMQPExchangeType::DIRECT, false, true, false);
+            $channel->queue_bind('regdata', 'regexch');
 
-            $messageBody = json_encode($reg_arr, JSON_PRETTY_PRINT);
-            $message = new AMQPMessage($messageBody, array('content_type' => 'application/json', 'delievery_mode' => AMQPMessage::DELIEVERY_MODE_PERSISTENT));
-            $channel->basic_publish($message, $EXCHANGE);
+            //$messageBody = json_encode($reg_arr, JSON_PRETTY_PRINT);
+            $message = new AMQPMessage($reg_arr, array('content_type' => 'application/json', 'delievery_mode' => AMQPMessage::DELIEVERY_MODE_PERSISTENT));
+            $channel->basic_publish($message, 'regexch');
 
             $channel->close();
             $connection->close();
