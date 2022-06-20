@@ -1,6 +1,6 @@
 
 <?php
-require_once(__DIR__ . "lib/configrmq.php");
+require_once(__DIR__ . "/lib/configrmq.php");
 require_once(__DIR__ . "/vendor/autoload.php");
 //include(__DIR__ . "/config_rmq.php");
 use PhpAmqpLib\Connection\AMQPStreamConnection;
